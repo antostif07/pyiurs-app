@@ -50,7 +50,7 @@ export default function FormCalendar(props: IFormCalendar) {
                     // disabled={(date) =>
                     //   date > new Date() || date < new Date("1900-01-01")
                     // }
-                    autoFocus
+                    initialFocus
                     disabled={disabled}
                   />
                 </PopoverContent>

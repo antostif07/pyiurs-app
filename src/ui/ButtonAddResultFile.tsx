@@ -5,9 +5,12 @@ import { Audit } from "@/src/common/Audit"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useTransition } from "react"
+import { usePathname } from "next/navigation"
 
 export default function ButtonAddResultFile ({audit}: {audit: Audit}) {
     const [pending, startTransition] = useTransition()
+    const pathname = usePathname()
+
     const handleChange = (e: any) => {
         const fileInput = e.target;
 
@@ -31,7 +34,7 @@ export default function ButtonAddResultFile ({audit}: {audit: Audit}) {
             const fileResult = await saveMediaObject(formData)
             
             // @ts-ignore
-            await updateAudit({resultFile: fileResult["@id"]}, audit.id)
+            await updateAudit({resultFile: fileResult["@id"]}, audit.id, {redirectLink: pathname})
         })
     }
 

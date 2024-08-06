@@ -18,7 +18,7 @@ const FormSchema = z.object({
 
 const CreateAudit = FormSchema.omit({});
 
-export const updateAudit = async (body: Audit, id: any) => {
+export const updateAudit = async (body: Audit, id: any, params?: {redirectLink?: string}) => {
   const res = await fetch(
     `${process.env.API_URL}/audits/${id}`,
     {
@@ -32,11 +32,15 @@ export const updateAudit = async (body: Audit, id: any) => {
 
   const r = await res.json()
   
-  revalidatePath(`/pyiurs/audit/${r['id']}`)
-  redirect(`/pyiurs/audit/${r['id']}`)
+  if(params && params.redirectLink) {
+    revalidatePath(params.redirectLink)
+    redirect(params.redirectLink)
+  } else {
+    return r;
+  }
 }
 
-export default async function createAudit(formData: FormData) {
+export default async function createAudit(formData: FormData, params?: {redirectLink?: string}) {
   const {name, assignment, segment, categories, start_date, baseFile, totalBaseFile} = CreateAudit.parse({
     name: formData.get('name'),
     assignment: formData.get('assignment'),
@@ -62,6 +66,10 @@ export default async function createAudit(formData: FormData) {
 
   const result = await res.json()
 
-  revalidatePath('/pyiurs/audit')
-  redirect('/pyiurs/audit')
+  if(params && params.redirectLink) {
+    revalidatePath(params.redirectLink)
+    redirect(params.redirectLink)
+  } else {
+    return result;
+  }
 }
