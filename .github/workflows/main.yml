@@ -1,0 +1,71 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches:
+      - master  # Adjust the branch name if needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.2  # Use the desired Node.js version
+
+      - name: Install dependencies and build Next.js app
+        run: |
+          npm install  # Install project dependencies
+          touch .env.local
+          echo LOCAL_URL=https://zarinadressing.com >> .env.local
+          echo NEXT_PUBLIC_LOCAL_URL=https://zarinadressing.com >> .env.local
+          echo API_URL=https://zarinadressing.com/api/public/api >> .env.local
+          echo NEXT_PUBLIC_API_URL="https://zarinadressing.com/api/public/api" >> .env.local
+          echo NEXT_PUBLIC_URL="https://zarinadressing.com/api/public"
+          # echo MONGO_URL=${{ secrets.MONGO_URL }} >> .env.local
+          # echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env.local
+          npm run build  # Build Next.js app
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+        
+      - name: Deploy to FTP server
+        uses: airvzxf/ftp-deployment-action@latest
+        with:
+          # FTP Server.
+          server: ftp.kolomabeledrc.com
+          # FTP User.
+          user: arnold.bopeto@kolomabeledrc.com
+          # FTP Password.
+          password: CP@ushindi15
+          # Local directory.
+          local_dir: . # optional, default is ./
+          # Remote directory.
+          remote_dir: /zarinadressing.com/zarina/
+          # Delete all the files inside of the remote directory.
+        # run: |
+          # lftp -e "
+          #   open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ftp.kolomabeledrc.com
+          #   set ssl:verify-certificate no  # Optional: Disable SSL verification if needed
+          #   mirror -R -e -x .git/ -x .github/ -x .next/ -x node_modules/ . /zarinadressing.com/zarina/
+          #   bye
+          # "
+          # SFTP credentials
+          # host: sftp.kolomabeledrc.com
+          # port: 21
+          # user: ${{ secrets.FTP_USERNAME }}
+          # pass: ${{ secrets.FTP_PASSWORD }}
+          # lftp settings
+          # onlyNewer: true
+          # settings: 'sftp:auto-confirm=yes'
+          # Mirror command options
+          # localDir: '.'
+          # remoteDir: /zarinadressing.com/zarina/
+          # reverse: true
+          # ignoreFile: '.lftp_ignore'
+          # options: '--verbose'
+        
