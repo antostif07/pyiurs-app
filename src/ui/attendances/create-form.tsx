@@ -6,9 +6,9 @@ import { parseExcelLogs } from "@/src/lib/parseExcelLogs"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TableHeader, TableHead, TableBody, TableCell, Table, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Employee } from "@/src/common/Employee"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LoadingButton } from "../LoadingButton"
+import { Employee } from "../employees/Employee"
 
 export default function CreateForm({employees}: {employees: Array<Employee>}) {
     const [excelData, setExcelData] = useState([])

@@ -1,11 +1,11 @@
 import { Control, FieldValues } from "react-hook-form";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
-import { Calendar } from "./ui/calendar";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
+import { Button } from "@/components/ui/button";
 
 export interface IFormCalendar {
     control?: Control<FieldValues>,

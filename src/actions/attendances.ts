@@ -1,21 +1,9 @@
 'use server'
-import { Attendance } from '@/src/common/Attendance';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { Attendance } from '../ui/attendances/Attendance';
 
-export const updateAttendance = async (attendance: Attendance, id: any) => {
-  let mediaFileId;
-
-  if(attendance.mediaFile) {
-    const result = await saveMediaAttendance(attendance.mediaFile)
-
-    mediaFileId = result["@id"]
-  }
-  
-  delete attendance.mediaFile
-
-  const body = mediaFileId ? {...attendance, mediaFile: mediaFileId} : attendance
-  
+export const updateAttendance = async (attendance: Attendance, id: any, options?: {redirectLink?: string}) => {
   const res = await fetch(
     `${process.env.API_URL}/attendances/${id}`,
     {
@@ -23,26 +11,17 @@ export const updateAttendance = async (attendance: Attendance, id: any) => {
       headers: {
         "content-type": "application/merge-patch+json"
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(attendance)
     }
   )
   
-  revalidatePath('/pyiurs/rh/attendances')
-  redirect('/pyiurs/rh/attendances')
-}
-
-const saveMediaAttendance = async (body: any) => {
-  const res = await fetch(
-    `${process.env.API_URL}/media_objects`,
-    {
-      method: "POST",
-      body: body
-    }
-  )
-
-  const result = await res.json()
+  const r = await res.json()
   
-  return result
+  if(options && options.redirectLink) {
+    revalidatePath(options.redirectLink)
+    revalidateTag("attendances")
+    // redirect(options.redirectLink) 
+  }
 }
 
 const saveAttend = async (attendance: {attendanceDateTime: string, date_id: string, employee: string, status: string}) => {
@@ -95,6 +74,6 @@ export default async function addAttendances(attendances: Array<{
 
   const res = await setAttendances()
 
-  revalidatePath('/pyiurs/rh/attendances')
-  redirect('/pyiurs/rh/attendances')
+  revalidatePath('/rh/attendances')
+  redirect('/rh/attendances')
 }

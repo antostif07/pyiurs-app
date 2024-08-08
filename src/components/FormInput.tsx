@@ -1,7 +1,7 @@
-import { Control, FieldValues } from "react-hook-form";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
+
 import { HTMLInputTypeAttribute } from "react";
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 export interface IFormInput {
     control?: any,

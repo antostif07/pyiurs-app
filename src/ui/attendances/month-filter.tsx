@@ -44,7 +44,6 @@ export default function MonthFilter() {
             params.set('attendanceDateTime[before]', before)
 
             replace(`${pathname}?${params.toString()}`);
-            console.log(params.toString());
         } else if(data) {
             const after = `${data.year}-${parseInt(data.month) - 1}-21`
             const before = `${data.year}-${data.month}-20`
@@ -52,7 +51,6 @@ export default function MonthFilter() {
             params.set('attendanceDateTime[before]', before)
 
             replace(`${pathname}?${params.toString()}`);
-            console.log(params.toString());
         }
         
         // toast({

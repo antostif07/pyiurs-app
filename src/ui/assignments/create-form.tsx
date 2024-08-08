@@ -1,7 +1,7 @@
 'use client'
 import addAssignment from "@/src/actions/assigmnents"
 import FormInput from "@/src/components/FormInput"
-import { Form } from "@/src/components/ui/form"
+import { Form } from "@/components/ui/form"
 import dataToFormData from "@/src/lib/dataToFormData"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTransition } from "react"

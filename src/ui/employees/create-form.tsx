@@ -4,13 +4,14 @@ import { Assignment } from "@/src/common/Assignment"
 import FormCalendar from "@/src/components/FormCalendar"
 import FormInput from "@/src/components/FormInput"
 import FormSelect from "@/src/components/FormSelect"
-import { Form } from "@/src/components/ui/form"
+import { Form } from "@/components/ui/form"
 import dataToFormData from "@/src/lib/dataToFormData"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { LoadingButton } from "../LoadingButton"
 import { useTransition } from "react"
+import { usePathname } from "next/navigation"
 
 const FormSchema = z.object({
     name: z.string().min(3, {message: "Veuillez renseigner le nom"}),
@@ -33,6 +34,7 @@ const FormSchema = z.object({
 
 export default function CreateForm({affectations}: {affectations: Array<Assignment>}) {
     const [pending, startTransition] = useTransition()
+    const pathname = usePathname()
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -45,7 +47,7 @@ export default function CreateForm({affectations}: {affectations: Array<Assignme
         const formData = dataToFormData(data)
 
         startTransition(async () => {
-            await addEmployee(formData)
+            await addEmployee(formData, {relink: pathname})
         })
     }
 

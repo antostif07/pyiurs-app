@@ -1,4 +1,4 @@
-import { Assignment } from "./Assignment";
+import { Assignment } from "../../common/Assignment";
 
 export interface Employee {
     id: number;

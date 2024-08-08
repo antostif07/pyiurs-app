@@ -11,10 +11,12 @@ export default async function Page({
   searchParams?: {
     "attendanceDateTime[after]"?: string;
     "attendanceDateTime[before]"?: string;
+    page?: string;
   };
 }) {
   const after = searchParams && searchParams["attendanceDateTime[after]"]
   const before = searchParams && searchParams["attendanceDateTime[before]"]
+  const page = searchParams && searchParams.page
 
     return (
       <Suspense fallback={<Loading />}>
@@ -22,7 +24,7 @@ export default async function Page({
             <div className="flex justify-between">
                 <h1 className="text-2xl font-bold">Présences</h1>
                 <div className="flex gap-4 items-center">
-                  <Link href={"/pyiurs/rh/attendances/import"}>
+                  <Link href={"/rh/attendances/import"}>
                     <Button>Importer</Button>
                   </Link>
                 </div>
@@ -35,7 +37,7 @@ export default async function Page({
                 </div>
             </div>
             <div className="mt-8">
-              <TableWrapper sParams={{after: after, before: before}} />
+              <TableWrapper sParams={{after: after, before: before, page: page}} />
             </div>
         </div>
       </Suspense>

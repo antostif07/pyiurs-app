@@ -21,7 +21,7 @@ const FormSchema = z.object({
 
 const CreateEmployee = FormSchema.omit({});
 
-export default async function addEmployee(formData: FormData) {
+export default async function addEmployee(formData: FormData, options?: {relink?: string}) {
   const {name, assignment, salary, transportFee, total_days, address, start_date, team, department, job_status, matricule, employee_function} = CreateEmployee.parse({
     name: formData.get('name'),
     assignment: formData.get('assignment'),
@@ -61,10 +61,10 @@ export default async function addEmployee(formData: FormData) {
   
   const result = await res.json()
 
-  if(result['violations'] || (result['@type'] && result['@type'] === "hydra:Error")) {
-    console.log(result['violations']);
+  if(options && options.relink) {
+    revalidatePath(options.relink)
+    redirect(options.relink)
   } else {
-    revalidatePath('/pyiurs/rh')
-    redirect('/pyiurs/rh')
+    return result
   }
 }

@@ -1,6 +1,6 @@
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control, FieldValues } from "react-hook-form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "./ui/form";
 
 export interface IFormSelect {
     control?: Control<FieldValues>,

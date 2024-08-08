@@ -14,7 +14,7 @@ import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { LoadingButton } from "./LoadingButton"
-import { toast } from "../components/ui/use-toast"
+import { toast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
     name: z.string().min(3, {message: "Veuillez renseigner le nom"}),

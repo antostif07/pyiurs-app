@@ -36,7 +36,7 @@ export default function RhMenu() {
                         </Link>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <Link href="/rh/assignments">
+                        <Link href="/rh/assignments" legacyBehavior passHref>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                             Affectations
                             </NavigationMenuLink>
@@ -47,14 +47,14 @@ export default function RhMenu() {
                         <NavigationMenuContent>
                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px]">
                                 <li>
-                                    <Link  className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")} href={"/rh/attendances"}>
+                                    <Link  className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")} href={"/rh/attendances"} legacyBehavior passHref>
                                         <NavigationMenuLink asChild>                                    
                                             <div className="text-sm font-medium leading-none">Présences</div>
                                         </NavigationMenuLink>
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link  className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")} href={"/rh/payments"}>
+                                    <Link  className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")} href={"/rh/payments"} legacyBehavior passHref>
                                         <NavigationMenuLink asChild>                                    
                                             <div className="text-sm font-medium leading-none">Paiements</div>
                                         </NavigationMenuLink>

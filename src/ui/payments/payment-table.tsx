@@ -1,7 +1,7 @@
 'use client'
-import { Attendance } from "@/src/common/Attendance"
 import {Table, TableBody,TableCaption,TableHead,TableHeader, TableRow as Row} from "@/components/ui/table"
 import PaymentTableRow from "./payment-table-row"
+import { Attendance } from "../attendances/Attendance";
 
 const attendancesByEmployee = (data: Attendance[]) => {
     const restructuredData = data.reduce((acc, attendance) => {

@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
-import { Employee } from '@/src/common/Employee';
+import { Employee } from '../employees/Employee';
 
 interface IBulletinPaie {
     period: {from: string, to: string};
