@@ -1,0 +1,37 @@
+export interface PaySlip {
+    id: number;
+    employeeName: string;
+    employeeAssignment: string;
+    employeeSalary: number;
+    employeeTransport: number;
+    employeeDaysOfJob: number;
+    employeeIndKm: number;
+    retR1: number;
+    retRetR1: number;
+    retR2: number;
+    retRetR2: number;
+    absence: number;
+    retAbsence: number;
+    transportAbs: number;
+    malade: number;
+    transportMalade: number;
+    retMalade: number;
+    cCirc: number;
+    transportCCirc: number;
+    retCCirc: number;
+    cCircNP: number;
+    transportCCircNP: number;
+    retCCircNP: number;
+    suspension: number;
+    transportSuspension: number;
+    retSuspension: number;
+    prime: number;
+    debtPaid: number;
+    debtToPaid: number;
+    remMalade: number;
+    remCC: number;
+    totalRet: number;
+    totalPay: number;
+    nap: number;
+    isValid?: boolean;
+}
