@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { ColumnFiltersState, PaginationState } from "@tanstack/react-table"
 import { redirect } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
+import { revalidatePath } from "next/cache"
 
 const getAllData = async ({ 
     // sorting, 
@@ -31,6 +32,7 @@ const getAllData = async ({
           "content-type": "application/ld+json",
           "Authorization": `Bearer ${token}`
         },
+        cache: 'no-cache'
     })
     
     const resp = await res.json()

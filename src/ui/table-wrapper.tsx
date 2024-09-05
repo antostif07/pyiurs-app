@@ -1,42 +1,42 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataTableServerData } from './DataTableServerData';
 import { ColumnDef, ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '../lib/useDebounce';
 import { useGetData } from '../actions/global';
-// import { useSession } from 'next-auth/react';
-// import { Session } from 'next-auth';
 import LoadingPage from './LoadingPage';
+import getUser from '../lib/getUser';
 
 interface ITableWrapper<TData, TValue> {
   entityName: string;
   columns: ColumnDef<TData, TValue>[];
   emptyDataText?: string;
+  defaultFilter?: {id: string, value: any}[]
 }
-export default function TableWrapper<TData, TValue>({entityName, columns, emptyDataText}: ITableWrapper<TData, TValue>) {
-  // const {data, status,} = useSession()
+export default function TableWrapper<TData, TValue>({entityName, columns, emptyDataText, defaultFilter = []}: ITableWrapper<TData, TValue>) {
   
-  // if(status === "loading") {
-  //   return (
-  //     <LoadingPage />
-  //   )
-  // }
-  
-  return <DataTable entityName={entityName} emptyDataText='No data' session={null} columns={columns} />
+  return <DataTable entityName={entityName} emptyDataText='No data' columns={columns} defaultFilter={defaultFilter} />
   // return <div>data</div>
   
 }
 
 const DataTable = ({
-  session, entityName,emptyDataText, columns
+  entityName,emptyDataText, columns, defaultFilter
 }: {
   // @ts-ignore
-  session: Session|null, entityName: string, emptyDataText?: string, columns: ColumnDef<TData, TValue>[]
+  entityName: string, emptyDataText?: string, defaultFilter, columns: ColumnDef<TData, TValue>[]
 }) => {
+  const user = typeof window !== 'undefined' ? getUser() : {}
+  
   // sorting state of the table
   const [sorting, setSorting] = useState<SortingState>([]);
   // column filters state of the table
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    ...defaultFilter, { id: "assignmentName", value: user.token },
+  ]);
+  
+  console.log(columnFilters);
+  
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(
     columnFilters,
     500
@@ -47,7 +47,16 @@ const DataTable = ({
     pageSize: 50, //default page size
   });
 
+  // useEffect(() => {
+  //   setColumnFilters([
+  //     // { id: "assignmentName", value: session?.user.access_token}
+  //   ])
+  // }, [])
   const { data: serverData, isLoading } = useGetData({ entityName, pagination, columnFilters: debouncedColumnFilters})
+
+  // if (status === 'loading') {
+  //   return <LoadingPage />
+  // }
 
   return (
     <DataTableServerData

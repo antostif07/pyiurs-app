@@ -1,29 +1,34 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import getUser from "@/src/lib/getUser";
 import { IEmployeePayment } from "@/src/types/IEmployeePayment";
 import BulletinPaie from "@/src/ui/attendances/BulletinPaie";
 import PyiursLogo from "@/src/ui/PyiursLogo";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { locale } from "dayjs";
 
 export default function PaymentTabsSlip({data}: {data: IEmployeePayment[]}) {
     const handlePrint = (userPayment: IEmployeePayment) => {
         return BulletinPaie({employeePayment: userPayment})
     }
+    
+    const user = getUser()
+    
+    const result = data ? data.filter(d => d.employee.assignment.name === user.token) : []
 
     return (
         <Tabs className="mt-4" defaultValue={data[0] ? data[0].employee.name : ""}>
             <TabsList>
                 {
-                    data && data.map((userPayment: IEmployeePayment, index: number) => (
+                    result && result.map((userPayment: IEmployeePayment, index: number) => (
                         <TabsTrigger key={index} value={userPayment.employee.name}>{userPayment.employee.name}</TabsTrigger>
                     ))
                 }
             </TabsList>
             {
-                data && data.map((userPayment: IEmployeePayment, index: number) => {
+                result && result.map((userPayment: IEmployeePayment, index: number) => {
                     const transportByDay = userPayment.employee.transportFee / 26
                     const totalNet = (userPayment.employee.total_days - userPayment.absence) * (userPayment.employee.salary / userPayment.employee.total_days)
                     const totalRet = 

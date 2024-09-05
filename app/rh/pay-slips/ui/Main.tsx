@@ -1,5 +1,5 @@
 'use client'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fetcher } from "@/src/lib/fetcher";
 import { PaySlip } from "@/src/ui/pay-slips/PaySlip";
 import SelectMonthToVerify from "@/src/ui/pay-slips/select-month-to-verify";
@@ -8,7 +8,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState, useTransition } from "react";
 import useSWR from 'swr'
 import PaySlipTableRow from "./PaySlipTableRow";
-
+import getUser from "@/src/lib/getUser";
 
 export default function Main({affectations}: {affectations: any}) {
     const dataAffectations = affectations && affectations['hydra:member'] ? affectations['hydra:member'] : []
@@ -16,6 +16,8 @@ export default function Main({affectations}: {affectations: any}) {
         month: ((new Date()).getMonth() + 1).toString().length == 1 ? `0${((new Date()).getMonth() + 1).toString()}` : ((new Date()).getMonth() + 1).toString(),
         year: (new Date()).getFullYear().toString()
     })
+
+    const user = typeof window !== 'undefined' ? getUser() : {}
 
     const handleSelected = (e: any) => {
         setSelected({...selected, ...e})
@@ -35,7 +37,9 @@ export default function Main({affectations}: {affectations: any}) {
         },
     })
     
-    const paySlips = data && data['hydra:member'] ? data['hydra:member'] : []
+    const result = data && data['hydra:member'] ? data['hydra:member'] : []
+    
+    const paySlips = result ? result.filter((r: PaySlip) => r.employeeAssignment === user.token) : []
     
     return (
         <div>
@@ -54,8 +58,14 @@ export default function Main({affectations}: {affectations: any}) {
                         <TableHead className="whitespace-nowrap">Affectation</TableHead>
                         <TableHead className="whitespace-nowrap">Salaire</TableHead>
                         <TableHead className="whitespace-nowrap">Trans.</TableHead>
-                        <TableHead className="whitespace-nowrap">Jr</TableHead>
                         <TableHead className="whitespace-nowrap bg-blue-400 text-white">Présent</TableHead>
+                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Prime</TableHead>
+                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Rem. Mal</TableHead>
+                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Rem. CC</TableHead>
+                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Sal. Net</TableHead>
+                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Transp.</TableHead>
+                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">NAP</TableHead>
+                        <TableHead className="whitespace-nowrap">Action</TableHead>
                         <TableHead className="whitespace-nowrap bg-red-600 text-white">R-1</TableHead>
                         <TableHead className="whitespace-nowrap bg-red-600 text-white">R-2</TableHead>
                         <TableHead className="whitespace-nowrap bg-red-600 text-white">Absence</TableHead>
@@ -65,14 +75,6 @@ export default function Main({affectations}: {affectations: any}) {
                         <TableHead className="whitespace-nowrap bg-red-600 text-white">Susp</TableHead>
                         <TableHead className="whitespace-nowrap bg-red-600 text-white">Dette</TableHead>
                         <TableHead className="whitespace-nowrap bg-red-600 text-white">Tot. Ret</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Prime</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Ind. Km</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Rem. Mal</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Rem. CC</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Sal. Net</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">Transp.</TableHead>
-                        <TableHead className="whitespace-nowrap bg-blue-400 text-white">NAP</TableHead>
-                        <TableHead className="whitespace-nowrap">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -98,12 +100,122 @@ export default function Main({affectations}: {affectations: any}) {
                             ))
                     }
                 </TableBody>
-                {/* <TableFooter>
-                    <TableRow>
-                    <TableCell colSpan={3}>Total</TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                    </TableRow>
-                </TableFooter> */}
+                {
+                    paySlips.length !== 0 && !isLoading && (
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell colSpan={5}>Total</TableCell>
+                                <TableCell className="text-right">
+                                    {
+                                        // @ts-ignore
+                                        paySlips.reduce((acc, v) => {
+                                            return acc + v.prime
+                                        }, 0).toFixed(0)
+                                    } $
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.remMalade
+                                        }, 0).toFixed(0)
+                                    } $
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.remCC
+                                        }, 0).toFixed(0)
+                                    } $
+                                </TableCell>
+                                <TableCell className="text-right whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.totalPay
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="text-right whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retTransport
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="text-right whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.nap
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell></TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retRetR1
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retRetR2
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retAbsence
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retMalade
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retCCirc
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap ">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.cCircNP
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.retSuspension
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.debtPaid
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">
+                                    {
+                                        paySlips.reduce((acc: number, v: PaySlip) => {
+                                            return acc + v.totalRet
+                                        }, 0).toFixed(2)
+                                    } $
+                                </TableCell>
+                            </TableRow>
+                        </TableFooter>
+                    )
+                }
             </Table>
             </div>
         </div>

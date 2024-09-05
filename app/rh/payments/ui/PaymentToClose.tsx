@@ -12,10 +12,9 @@ export default function PaymentToClose ({dataAffectations}: {dataAffectations: A
         month: ((new Date()).getMonth() + 1).toString().length == 1 ? `0${((new Date()).getMonth() + 1).toString()}` : ((new Date()).getMonth() + 1).toString(),
         year: (new Date()).getFullYear().toString()
     })
-    
+
     const { data, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/employee_payments?month=${selected.year}-${selected.month}`, 
         (url: string) => fetcher(url, null), {
-        revalidateOnMount: true,
         async onSuccess(data, key, config) {
             console.log(data);
             // if(data.code && data.code === 401){

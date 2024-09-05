@@ -39,6 +39,7 @@ const FormSchema = z.object({
     suspension: z.number().optional(),
     retSuspension: z.number().optional(),
     transportSuspension: z.number().optional(),
+    retTransport: z.number().optional()
   })
 
 export default function PaySlipTableRow ({paySlip, month}: {paySlip: PaySlip, month: string}) {
@@ -69,23 +70,12 @@ export default function PaySlipTableRow ({paySlip, month}: {paySlip: PaySlip, mo
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeAssignment}</TableCell>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeSalary} $</TableCell>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeTransport} $</TableCell>
-            <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeDaysOfJob}jr</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{present}jr</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR1.toFixed(2)}$ (${paySlip.retR1}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR2.toFixed(2)}$ (${paySlip.retR2}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retAbsence + paySlip.transportAbs).toFixed(2)}$ (${paySlip.absence}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retMalade + paySlip.transportMalade).toFixed(2)}$ (${paySlip.malade}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retCCirc + paySlip.transportCCirc).toFixed(2)}$ (${paySlip.cCirc}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retCCircNP + paySlip.transportCCircNP).toFixed(2)}$ (${paySlip.cCircNP}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retSuspension + paySlip.transportSuspension).toFixed(2)}$ (${paySlip.suspension}jr)`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.debtPaid.toFixed(2)}$`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.totalRet.toFixed(2)}$`}</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.prime.toFixed(2)}$`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.employeeIndKm.toFixed(2)}$`}</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.remMalade.toFixed(2)}$`}</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.remCC.toFixed(2)}$`}</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${(paySlip.totalPay + paySlip.remMalade + paySlip.remCC).toFixed(2)}$`}</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.employeeTransport.toFixed(2)}$`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.retTransport.toFixed(2)}$`}</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.nap.toFixed(2)}$`}</TableCell>
             <TableCell className="whitespace-nowrap">
                 {
@@ -118,10 +108,20 @@ export default function PaySlipTableRow ({paySlip, month}: {paySlip: PaySlip, mo
                             suspension: paySlip.suspension,
                             retSuspension: paySlip.retSuspension,
                             transportSuspension: paySlip.transportSuspension,
+                            retTransport: paySlip.retTransport
                         })
                     }}>{ pending ? <ReloadIcon className="animate-spin w-3 h-3" /> : "Valider"}</Button>
                 }
             </TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR1.toFixed(2)}$ (${paySlip.retR1}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR2.toFixed(2)}$ (${paySlip.retR2}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retAbsence + paySlip.transportAbs).toFixed(2)}$ (${paySlip.absence}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retMalade + paySlip.transportMalade).toFixed(2)}$ (${paySlip.malade}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retCCirc + paySlip.transportCCirc).toFixed(2)}$ (${paySlip.cCirc}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retCCircNP + paySlip.transportCCircNP).toFixed(2)}$ (${paySlip.cCircNP}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retSuspension + paySlip.transportSuspension).toFixed(2)}$ (${paySlip.suspension}jr)`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.debtPaid.toFixed(2)}$`}</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.totalRet.toFixed(2)}$`}</TableCell>
         </TableRow>
     )
 }

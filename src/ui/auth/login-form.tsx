@@ -6,9 +6,9 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { LoadingButton } from "../LoadingButton"
 import { useTransition } from "react"
-import { redirect, useSearchParams } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
+import { redirect } from "next/navigation"
 import dataToFormData from "@/src/lib/dataToFormData"
+import { useAppContext } from "@/src/context"
 
 const FormSchema = z.object({
     email: z.string().email("Veuillez rensigner l'email"),
@@ -17,6 +17,11 @@ const FormSchema = z.object({
 
 export default function LoginForm() {
     const [pending, startTransition] = useTransition()
+    const {user, setUser, users} = useAppContext()
+    
+    if(user) {
+        redirect('/')
+    }
     
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -27,15 +32,19 @@ export default function LoginForm() {
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         const formData = dataToFormData(data)
         
-        startTransition(async () => {
-            // if(signInRes){
-            //     toast({
-            //         title: "Connexion Reussie",
-            //     })
+        const email = formData.get('email')
+        const password = formData.get('password')
 
-            //     redirect("/")
-            // }
+        startTransition(async () => {
+            console.log(users);
             
+            const us = users.find((u: any) => u.name === email && u.pass === password)
+            
+            if(us) {
+                setUser(us)
+                localStorage.setItem('user', JSON.stringify(us))
+                redirect('/')
+            }
         })
     }
 

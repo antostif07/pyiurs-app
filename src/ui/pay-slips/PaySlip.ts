@@ -33,5 +33,6 @@ export interface PaySlip {
     totalRet: number;
     totalPay: number;
     nap: number;
+    retTransport: number;
     isValid?: boolean;
 }

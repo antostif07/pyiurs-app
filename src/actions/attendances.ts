@@ -30,8 +30,7 @@ export const updateAttendance = async (attendance: Attendance, id: any, options?
   const r = await res.json()
   
   if(options && options.redirectLink) {
-    revalidatePath(options.redirectLink)
-    revalidateTag("attendances")
+    revalidatePath("/attendances")
   }
 }
 
