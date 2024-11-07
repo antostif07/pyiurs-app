@@ -66,18 +66,19 @@ export default function PaySlipTableRow(
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeSalary} $</TableCell>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeTransport} $</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{present}jr</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">
+                {`${paySlip.prime.toFixed(2)}$`}
+            </TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.prime.toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.remMalade?.toFixed(2)}$`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.remMalade.toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.remCC?.toFixed(2)}$`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.remCC.toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.totalPay?.toFixed(2)}$`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${(paySlip.totalPay).toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.retTransport?.toFixed(2)}$`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.retTransport.toFixed(2)}$`}</TableCell>
-            <TableCell
-                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.nap.toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-blue-400 text-white">{`${paySlip.nap?.toFixed(2)}$`}</TableCell>
             <TableCell className="whitespace-nowrap">
                 {
                     paySlip.isValid ? "Bulletin Validé" :
@@ -120,9 +121,9 @@ export default function PaySlipTableRow(
                 }
             </TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR1.toFixed(2)}$ (${paySlip.retR1}jr)`}</TableCell>
+                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR1?.toFixed(2)}$ (${paySlip.retR1}jr)`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR2.toFixed(2)}$ (${paySlip.retR2}jr)`}</TableCell>
+                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.retRetR2?.toFixed(2)}$ (${paySlip.retR2}jr)`}</TableCell>
             <TableCell
                 className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retAbsence + paySlip.transportAbs).toFixed(2)}$ (${paySlip.absence}jr)`}</TableCell>
             <TableCell
@@ -134,9 +135,9 @@ export default function PaySlipTableRow(
             <TableCell
                 className="font-medium whitespace-nowrap bg-red-600 text-white">{`${(paySlip.retSuspension + paySlip.transportSuspension).toFixed(2)}$ (${paySlip.suspension}jr)`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.debtPaid.toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.debtPaid?.toFixed(2)}$`}</TableCell>
             <TableCell
-                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.totalRet.toFixed(2)}$`}</TableCell>
+                className="font-medium whitespace-nowrap bg-red-600 text-white">{`${paySlip.totalRet?.toFixed(2)}$`}</TableCell>
         </TableRow>
     )
 }
