@@ -1,7 +1,31 @@
 'use client'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {useEffect, useState} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 
-export default function SelectMonthToVerify({handleSelected, selected}: {handleSelected: (e:any) => void, selected: {month: string, year:string}}) {
+export default function SelectMonthToVerify() {
+    const [selected, setSelected] = useState({
+        month: ((new Date()).getMonth() + 1).toString().length == 1 ? `0${((new Date()).getMonth() + 1).toString()}` : ((new Date()).getMonth() + 1).toString(),
+        year: (new Date()).getFullYear().toString()
+    })
+    const searchParams = useSearchParams()
+    const pathname = usePathname()
+    const {replace} = useRouter()
+    const handleSelected = (e: any) => {
+        setSelected({...selected, ...e})
+    }
+
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams)
+
+        if (selected.month && selected.year) {
+            params.set('search', `${selected.year}-${selected.month}`);
+        } else {
+            params.delete('search');
+        }
+
+        replace(`${pathname}?${params.toString()}`)
+    }, [selected])
     const months = [
         { name: "Jan", id: "01"},
         { name: "Fev", id: "02"},
@@ -19,7 +43,10 @@ export default function SelectMonthToVerify({handleSelected, selected}: {handleS
 
     return (
         <div className="flex gap-3">
-            <Select onValueChange={(e: string) => handleSelected({month: e})} value={selected.month}>
+            <Select
+                onValueChange={(value) => handleSelected({month: value})}
+                value={selected.month}
+            >
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Le Mois" />
                 </SelectTrigger>
@@ -34,7 +61,10 @@ export default function SelectMonthToVerify({handleSelected, selected}: {handleS
                     </SelectGroup>
                 </SelectContent>
             </Select>
-            <Select onValueChange={(e: string) => handleSelected({year: selected.year})} value={selected.year}>
+            <Select
+                onValueChange={(e: string) => handleSelected({year: e})}
+                value={selected.year}
+            >
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="L'Année" />
                 </SelectTrigger>

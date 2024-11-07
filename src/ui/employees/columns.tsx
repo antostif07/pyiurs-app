@@ -51,7 +51,7 @@ export const columns: ColumnDef<Employee>[] = [
     {
         accessorKey: "startDate",
         header: "Debut",
-        cell: ({ cell, row }) => {
+        cell: ({row }) => {
             return row.original.start_date ? format(row.original.start_date, "dd MMM yyyy") : ""
           }
     },
@@ -82,14 +82,6 @@ export const columns: ColumnDef<Employee>[] = [
           },
     },
     {
-        accessorKey: "total_days",
-        header: "Nb. Jr",
-        cell: ({row}) => {
-            return <div className="text-right font-medium">{row.getValue('total_days')} jr</div>
-        },
-        enableColumnFilter: false
-    },
-    {
         accessorKey: "email",
         header: "Email",
     },
@@ -101,10 +93,6 @@ export const columns: ColumnDef<Employee>[] = [
         accessorKey: "matricule",
         header: "Matricule",
         enableColumnFilter: false,
-    },
-    {
-        accessorKey: "job_status",
-        header: "Status",
     },
     {
         accessorKey: "employee_function",

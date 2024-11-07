@@ -2,36 +2,22 @@
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import dataToFormData from "@/src/lib/dataToFormData";
-import { LoaderIcon, PlusCircleIcon } from "lucide-react";
+import { LoaderIcon, } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import  { addEmployeeDebtPayement } from "@/src/actions/employeeDebt";
-import useSWR from "swr";
-import { fetcher } from "@/src/lib/fetcher";
+import  { addEmployeeDebtPayment } from "@/src/actions/employeeDebt";
 import { IEmployeeDebt } from "@/src/types/IEmployeeDebt";
 import PayDebtRow from "./PayDebtRow";
 import { PaySlip } from "../pay-slips/PaySlip";
 import addEmployeePayment from "@/src/actions/employeePayments";
 
-export default function PaidDebtDialog({employeeId, paySlip, month}: {employeeId: number, paySlip: PaySlip, month: string}) {
+export default function PaidDebtDialog(
+    {employeeId, paySlip, month, employeeDebts}: {employeeId: number, paySlip: PaySlip, month: string, employeeDebts: IEmployeeDebt[]}
+) {
     const [open, setOpen] = useState<boolean>(false)
     const [pending, startTransition] = useTransition()
     const [formDebtPayment, setFormDebtPayment] = useState<any>([])
     const {refresh} = useRouter()
-
-    const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/employee_debts?employee=${employeeId}`, (url: string) => fetcher(url, null), {
-        revalidateOnMount: true,
-        async onSuccess(data, key, config) {
-            console.log(data);
-            // if(data.code && data.code === 401){
-            //     await logout()
-            //     redirect('/login', RedirectType.replace)
-            // }
-        
-        },
-    })
-    
-    const debts = data && data['hydra:member'] ? data['hydra:member'] : []
       
     async function onSubmit(e: any) {
         e.preventDefault()
@@ -73,7 +59,7 @@ export default function PaidDebtDialog({employeeId, paySlip, month}: {employeeId
                     for (const item of array) {
                         const fD = dataToFormData({...item, employeePayment: empPayment['@id']})
                         // Opération asynchrone
-                        const result = await addEmployeeDebtPayement(fD);
+                        await addEmployeeDebtPayment(fD);
                     }
                 }
                 if(formDebtPayment.length > 0) {
@@ -86,6 +72,7 @@ export default function PaidDebtDialog({employeeId, paySlip, month}: {employeeId
             refresh()
         })
     }
+
     return (
         <AlertDialog open={open}>
             <AlertDialogTrigger asChild onClick={() => setOpen(true)}>
@@ -106,7 +93,7 @@ export default function PaidDebtDialog({employeeId, paySlip, month}: {employeeId
                                 <div>Montant à payer</div>
                             </div>
                             {
-                                debts.map((debt: IEmployeeDebt) => (
+                                employeeDebts.map((debt: IEmployeeDebt) => (
                                     <PayDebtRow debt={debt} 
                                         key={debt["@id"]}
                                         formDebtPayment={formDebtPayment} 

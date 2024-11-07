@@ -10,12 +10,10 @@ export const parseFormData = async (formData: FormData) => {
     // @ts-ignore
     for (const [key, value] of formData.entries()) {
       // Convertir les valeurs en chaînes de caractères
-      
-      const stringValue = key === "month" ? String(value) : isNumber(value) ? Number(value) : String(value);
-      
-      // Assigner la valeur à l'objet de données
+
+  // Assigner la valeur à l'objet de données
       // @ts-ignore
-      data[key] = stringValue;
+      data[key] = key === "month" ? String(value) : isNumber(value) ? Number(value) : String(value);
     }
     
     return data;

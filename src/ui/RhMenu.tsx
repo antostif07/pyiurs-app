@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { rhMenus } from "../lib/menus";
 import { ReactNode } from "react";
-import { useSession } from "next-auth/react";
 
 export default function RhMenu() {
     // const session = useSession()

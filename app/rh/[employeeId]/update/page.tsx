@@ -1,4 +1,8 @@
 import CreateForm from "@/src/ui/employees/create-form";
+import apiGetData from "@/src/actions/apiGetData";
+import {Assignment} from "@/src/common/Assignment";
+import apiGetSingleData from "@/src/actions/apiGetSingleData";
+import {Employee} from "@/src/ui/employees/Employee";
 
 const getData = async () => {
   const res = await fetch(`${process.env.API_URL}/assignments`, {
@@ -32,9 +36,9 @@ const getEmployee = async (id: string) => {
 }
 
 export default async function UpdateEmployee({params}: any) {
-    const data = await getData()
+    const assignments =  await apiGetData<Assignment>(`/assignments`, 'assignments')
     const {employeeId} = params
-    const employee = await getEmployee(employeeId)
+    const employee = await apiGetSingleData<Employee>(`/employees`, employeeId, 'employees')
 
     return (
         <div className="pt-8">
@@ -42,7 +46,7 @@ export default async function UpdateEmployee({params}: any) {
                 <h1 className="text-2xl font-bold">Ajouter un employé</h1>
             </div>
             <div className="mt-8">
-                <CreateForm affectations={data['hydra:member']} employee={employee} />
+                <CreateForm affectations={assignments['hydra:member'] || []} employee={employee.data} />
             </div>
         </div>
     )

@@ -1,26 +1,41 @@
-'use client'
 import { Button } from "@/components/ui/button";
-import TableWrapper from "@/src/ui/table-wrapper";
 import { columns } from "@/src/ui/users/columns";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Link from "next/link";
+import {getSession, logout} from "@/src/actions/auth";
+import DataTableErrorWrapper from "@/src/ui/DataTableErrorWrapper";
 
-const queryClient = new QueryClient()
 
-export default function UserPage() {
-  return (
+export default async function UserPage() {
+    const session = await getSession()
+
+    let data = await fetch(
+        `${process.env.API_URL}/users`,
+        {
+            next: {tags: ['users']},
+            headers: {
+                'Content-Type': 'application/json+ld',
+                'Authorization': `Bearer ${session.token}`
+            }
+        }
+    )
+    let result = await data.json()
+
+    console.log(result)
+
+    if (result && result.code === 401) {
+        await logout()
+    }
+    return (
         <div className="pt-8">
             <div className="flex justify-between">
-                <h1 className="text-2xl font-bold">Employés</h1>
+                <h1 className="text-2xl font-bold">Utilisateurs</h1>
                 <Link href={"users/add"}>
-                  <Button>Ajouter</Button>
+                    <Button>Ajouter</Button>
                 </Link>
             </div>
             <div className="mt-8 relative">
-              <QueryClientProvider client={queryClient}>
-                <TableWrapper columns={columns} entityName="users" />
-              </QueryClientProvider>
+                <DataTableErrorWrapper data={result} columns={columns} />
             </div>
         </div>
-  )
+    )
 }

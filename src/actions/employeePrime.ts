@@ -1,4 +1,5 @@
-import { z } from "zod";
+import {z} from "zod";
+import {getSession} from "@/src/actions/auth";
 
 const FormSchema = z.object({
     description: z.string(),
@@ -9,7 +10,7 @@ const FormSchema = z.object({
   
   const CreateEmployeePrime = FormSchema.omit({});
   
-  export default async function addEmployeePrime(formData: FormData, options?: {redirectLink?: string}) {
+  export default async function addEmployeePrime(formData: FormData) {
     const {
       description, amount, month, employee
     } = CreateEmployeePrime.parse({
@@ -25,24 +26,16 @@ const FormSchema = z.object({
       month: month,
       employee: employee,
     }
-    
+
+    const session = await getSession()
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/employee_primes`, {
       method: "POST", 
       headers: {
-        "content-type": "application/ld+json"
+        "content-type": "application/ld+json",
+        "Authorization": `Bearer ${session.token}`
       },
       body: JSON.stringify(rawData),
-      cache: "no-store",
     })
-    
-    const result = await res.json()
-    
-    // if(options && options.redirectLink) {
-    //   revalidatePath(options.redirectLink, "page")
-    //   redirect(options.redirectLink)
-    // } else {
-    //   revalidateTag("employee-primes")
-    // }
 
-    return result
+    return await res.json()
   }

@@ -1,5 +1,5 @@
 'use client'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Attendance } from "./Attendance";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useTransition } from "react";
@@ -8,13 +8,15 @@ import { updateAttendance } from "@/src/actions/attendances";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+import {LoaderIcon} from "lucide-react";
 
 export default function UpdateAttendanceFormDialog({attendance}: {attendance: Attendance}) {
     const [form, setForm] = useState<{managerStatus?: string, observation?: string, rhStatus?: string}|{}>({})
+    const [open, setOpen] = useState(false)
     const [pending, startTransition] = useTransition()
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { replace } = useRouter()
+    const { refresh } = useRouter()
 
     useEffect(() => {
         setForm({
@@ -32,13 +34,14 @@ export default function UpdateAttendanceFormDialog({attendance}: {attendance: At
         startTransition(async () => {
             // @ts-ignore
             await updateAttendance(form, attendance.id ,{redirectLink: url})
-            replace(url, {scroll: true});
+            refresh()
+            setOpen(false)
         })
     }
 
     return (
-        <AlertDialog>
-            <AlertDialogTrigger>
+        <AlertDialog open={open}>
+            <AlertDialogTrigger asChild onClick={() => setOpen(true)}>
                 <Button>Confirmer</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -96,8 +99,10 @@ export default function UpdateAttendanceFormDialog({attendance}: {attendance: At
                 </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                <AlertDialogCancel disabled={pending}>Annuler</AlertDialogCancel>
-                <AlertDialogAction disabled={pending} className="flex gap-1 items-center" onClick={handleForm}>Confirmer { pending && <ReloadIcon className="animate-spin w-3 r-3" />}</AlertDialogAction>
+                    {/*<div className="flex justify-end gap-2 my-6" >*/}
+                        <Button disabled={pending} variant={'outline'} onClick={() => setOpen(false)}>Annuler</Button>
+                        <Button onClick={handleForm} disabled={pending}>{ pending ? <LoaderIcon className="w-3 h-3 animate-spin" /> : "Ajouter"}</Button>
+                    {/*</div>*/}
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

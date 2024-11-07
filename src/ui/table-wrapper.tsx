@@ -32,10 +32,8 @@ const DataTable = ({
   const [sorting, setSorting] = useState<SortingState>([]);
   // column filters state of the table
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    ...defaultFilter, { id: "assignmentName", value: user.token },
+    ...defaultFilter, { id: "assignmentName", value: user ? user.token : "" },
   ]);
-  
-  console.log(columnFilters);
   
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(
     columnFilters,

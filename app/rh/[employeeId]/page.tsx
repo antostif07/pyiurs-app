@@ -1,28 +1,29 @@
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IEmployeeDebt } from "@/src/types/IEmployeeDebt";
-import { IEmployeePrime } from "@/src/ui/employee-prime/IEmployeePrime";
+import {Badge} from "@/components/ui/badge";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {IEmployeeDebt} from "@/src/types/IEmployeeDebt";
+import {IEmployeePrime} from "@/src/ui/employee-prime/IEmployeePrime";
 import DebtDialog from "@/src/ui/employees/DebtDialog";
-import { Employee as IEmployee } from "@/src/ui/employees/Employee";
+import {Employee as IEmployee} from "@/src/ui/employees/Employee";
 import PrimeDialog from "@/src/ui/employees/PrimeDialog";
-import { AvatarIcon } from "@radix-ui/react-icons";
-import { Tabs } from "@radix-ui/react-tabs";
+import {AvatarIcon} from "@radix-ui/react-icons";
+import {Tabs} from "@radix-ui/react-tabs";
+import {getSession} from "@/src/actions/auth";
 
 const getEmployee = async (id: string) => {
   try {
+      const session = await getSession()
       const res = await fetch(`${process.env.API_URL}/employees/${id}`, {
           headers: {
-            "content-type": "application/ld+json",
-            // "Authorization": `Bearer ${session?.user.access_token}`
+              "content-type": "application/ld+json",
+              'Authorization': `Bearer ${session.token}`
           },
           next: {
-            revalidate: 120, tags: ["employees"],
+            tags: ["employees"],
           },
         })
-        
-        const resp = await res.json()
-        return resp
+
+      return await res.json()
   } catch (error) {
       console.log(error);
   }
@@ -30,16 +31,16 @@ const getEmployee = async (id: string) => {
 
   const getEmployeePrimes = async (id: string) => {
     try {
+        const session = await getSession()
         const res = await fetch(`${process.env.API_URL}/employee_primes?employee=${id}`, {
             headers: {
               "content-type": "application/ld+json",
-              // "Authorization": `Bearer ${session?.user.access_token}`
+                'Authorization': `Bearer ${session.token}`
             },
-            cache: 'no-store',
+            cache: 'no-store'
           })
-          
-          const resp = await res.json()
-          return resp
+
+        return await res.json()
     } catch (error) {
         console.log(error);
     }
@@ -47,27 +48,31 @@ const getEmployee = async (id: string) => {
 
   const getEmployeeDebts = async (id: string) => {
     try {
+        const session = await getSession()
         const res = await fetch(`${process.env.API_URL}/employee_debts?employee=${id}`, {
             headers: {
               "content-type": "application/ld+json",
-              // "Authorization": `Bearer ${session?.user.access_token}`
+                'Authorization': `Bearer ${session.token}`
             },
-            cache: 'no-store',
+            next: {
+                tags: ["employee_debts"]
+            },
+            cache: 'no-store'
           })
-          
-          const resp = await res.json()
-          return resp
+
+        return await res.json()
     } catch (error) {
         console.log(error);
     }
   }
-  
+
   export default async function Employee({params}: any) {
       const {employeeId} = params
       const employee: IEmployee|undefined = await getEmployee(employeeId)
       const employeePrimes: {'hydra:totalItems': number, 'hydra:member': IEmployeePrime[]} = await getEmployeePrimes(employeeId)
       const employeeDebts: {'hydra:totalItems': number, 'hydra:member': IEmployeeDebt[]} = await getEmployeeDebts(employeeId)
-      
+
+      console.log(employee)
       const tabs = [
         "Informations Principales", "Primes", "Dettes",
       ]

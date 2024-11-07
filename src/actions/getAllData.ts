@@ -9,7 +9,7 @@ const getAllData = async ({
     // set Pagination
     const page = pagination.pageIndex + 1
     
-    // create Params for api query
+    // create Params for pages query
     const searchParams = () => {
         const p = new URLSearchParams()
 

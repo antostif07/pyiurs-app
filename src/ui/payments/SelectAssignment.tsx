@@ -11,14 +11,18 @@ export default function SelectAssignment({affectations}: {affectations: Assignme
     function handleSearch(affectation?: string) {
         const params = new URLSearchParams(searchParams);
         if (affectation) {
-          params.set('employee.assignment', affectation)
+          params.set('assignment', affectation)
         } else {
-          params.delete('employee.assignment')
+          params.delete('assignment')
         }
         replace(`${pathname}?${params.toString()}`);
-      }
+    }
+
     return (
-        <Select onValueChange={(e: string) => handleSearch(e)}>
+        <Select
+            onValueChange={(e: string) => handleSearch(e)}
+            value={searchParams?.get('assignment') || undefined}
+        >
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Selectionner l'Affectation" />
             </SelectTrigger>

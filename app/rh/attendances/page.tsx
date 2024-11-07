@@ -1,25 +1,40 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import TableWrapper from "@/src/ui/table-wrapper";
-import { columns } from "@/src/ui/attendances/columns";
-import EmployeeAttendancesTable from "@/src/ui/attendances/employee-attendances-table";
+import apiGetData from "@/src/actions/apiGetData";
+import {Employee} from "@/src/ui/employees/Employee";
+import AttendanceFilters from "@/src/ui/attendances/AttendanceFilters";
+import React from "react";
+import EmployeeTabs from "@/app/rh/attendances/employee-tabs.client";
+import {getSession} from "@/src/actions/auth";
+import AttendanceTab from "@/app/rh/attendances/attendance-tab.server";
 
+export default async function Page(
+    props: {
+        searchParams: Promise<{page?: string, assignmentName?: string}>
+    }) {
+    const searchParams = await props.searchParams
+    const bn = searchParams?.assignmentName || null
+    const session = await getSession()
 
-export default async function Page() {
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/employees`)
+    const data = await apiGetData<Employee>(`/employees?${bn ? 'assignmentName='+bn : ''}`, '')
+    const assignments = await apiGetData<Employee>(`/assignments`, 'assignments')
 
-  const data = await resp.json()
     return (
-          <div className="pt-8">
+        <div className="pt-8">
             <div className="flex justify-between">
                 <h1 className="text-2xl font-bold">Présences</h1>
                 <div className="flex gap-4 items-center">
-                  <Link href={"/rh/attendances/import"}>
-                    <Button>Importer</Button>
-                  </Link>
+                    <Link href={"/rh/attendances/import"}>
+                        <Button>Importer</Button>
+                    </Link>
                 </div>
-            </div> 
-            <EmployeeAttendancesTable employees={data ? data['hydra:member'] : []} />
-          </div>
-    )
+            </div>
+            <AttendanceFilters assignments={assignments['hydra:member'] || []} userRoles={session.roles || []} />
+            <EmployeeTabs  employees={data['hydra:member'] || []}/>
+            <AttendanceTab
+                searchParams={searchParams}
+            />
+        </div>
+    );
 }
+

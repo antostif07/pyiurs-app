@@ -1,9 +1,9 @@
 'use server'
 import { format } from 'date-fns';
-import { revalidatePath, revalidateTag } from 'next/cache';
-import { redirect } from 'next/navigation';
-import {number, z} from 'zod'
+import {revalidateTag } from 'next/cache';
+import {z} from 'zod'
 import { parseFormData } from '../lib/parseFormData';
+import {getSession} from "@/src/actions/auth";
 
 const FormSchema = z.object({
   name: z.string(),
@@ -27,8 +27,11 @@ const CreateEmployee = FormSchema.omit({});
 
 export default async function addEmployee(formData: FormData, options?: {redirectLink?: string}) {
   const parsedData = await parseFormData(formData);
-  
-  const form = CreateEmployee.safeParse(parsedData)
+
+  // @ts-ignore
+  const pD = {...parsedData, tel: parsedData.tel.toString()}
+
+  const form = CreateEmployee.safeParse(pD)
   
   if(form.error) {
     console.log(form.error);
@@ -38,24 +41,24 @@ export default async function addEmployee(formData: FormData, options?: {redirec
   const rawData = {
     ...form.data, start_date: format(form.data.start_date, "yyyy-MM-dd",)
   }
-  
+
+  const session = await getSession()
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/employees`, {
     method: "POST", 
     headers: {
-      "content-type": "application/ld+json"
+      "content-type": "application/ld+json",
+      "Authorization": `Bearer ${session.token}`
     },
     body: JSON.stringify(rawData)
   })
   
   const r = await res.json()
-
-  console.log(r);
   
   if(r.status && r.status !== 201) {
     console.log(r.status, r.detail)
   } else {
     if(options && options.redirectLink) {
-      revalidatePath(options.redirectLink)
       revalidateTag("employees")
       
       return r
@@ -65,8 +68,11 @@ export default async function addEmployee(formData: FormData, options?: {redirec
 
 export const updateEmployee = async (formData: FormData, id: string | number, options?: {redirectLink?: string}) => {
   const parsedData = await parseFormData(formData);
-  
-  const form = CreateEmployee.safeParse(parsedData)
+
+  // @ts-ignore
+  const pD = {...parsedData, tel: parsedData.tel.toString()}
+
+  const form = CreateEmployee.safeParse(pD)
 
   if(form.error) {
     console.log(form.error);
@@ -76,13 +82,15 @@ export const updateEmployee = async (formData: FormData, id: string | number, op
   const rawData = {
     ...form.data, start_date: format(form.data.start_date, "yyyy-MM-dd",)
   }
-  
+
+  const session = await getSession()
   const res = await fetch(
     `${process.env.API_URL}/employees/${id}`,
     {
       method: "PATCH", 
       headers: {
-        "content-type": "application/merge-patch+json"
+        "content-type": "application/merge-patch+json",
+        "Authorization": `Bearer ${session.token}`
       },
       body: JSON.stringify(rawData)
     }
@@ -96,7 +104,6 @@ export const updateEmployee = async (formData: FormData, id: string | number, op
     console.log(r.violations);
   } else {
     if(options && options.redirectLink) {
-      revalidatePath(options.redirectLink)
       revalidateTag("employees")
       
       return r

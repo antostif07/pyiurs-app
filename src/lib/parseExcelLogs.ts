@@ -1,7 +1,7 @@
-import { format } from 'date-fns';
+import {format} from 'date-fns';
 import * as XLSX from 'xlsx'
 import getTimeStatus from './getTimeStatus';
-import { convertirEnHeureMinute } from './convertTime';
+import {convertirEnHeureMinute} from './convertTime';
 
 export const parseExcelLogs = (excelData: XLSX.WorkSheet) => {
     const jsonData = XLSX.utils.sheet_to_csv(excelData, { blankrows: true})
@@ -25,7 +25,7 @@ export const parseExcelLogs = (excelData: XLSX.WorkSheet) => {
           currentEmployee = {
             name: line.split(',')[10],
             id: currentEmployeeIndexLog,
-            dateandtime: []
+            dateAndTime: []
           };
           // @ts-ignore
           attendanceData.push(currentEmployee)
@@ -35,15 +35,15 @@ export const parseExcelLogs = (excelData: XLSX.WorkSheet) => {
       let excelHourIndexRow = 6
       const finalData = attendanceData.map((d) => {
         // @ts-ignore
-        const dateandtime = []
+        const dateAndTime = []
 
         selectedDate.forEach((day, index) => {
             const theDay = format(new Date(parseInt(period.split('/')[1]), parseInt(period.split('/')[0]) - 1, parseInt(day)), "i")
             const time: string|null = excelData[`${rowsExcel[index]}${excelHourIndexRow}`] ? excelData[`${rowsExcel[index]}${excelHourIndexRow}`].v : null
-            
+
             const realTime = time !== null ? convertirEnHeureMinute(time) : null
-            
-            dateandtime.push(
+
+            dateAndTime.push(
               {
                 date: `${day}/${period}`,
                 time: realTime
@@ -58,10 +58,8 @@ export const parseExcelLogs = (excelData: XLSX.WorkSheet) => {
         excelHourIndexRow = excelHourIndexRow + 3
 
         // @ts-ignore
-        return {...d, dateandtime: dateandtime}
+        return {...d, dateAndTime: dateAndTime}
       })
 
-      const fdata = finalData.filter(eD => !(eD.dateandtime.every((e: any) => !e.time)))
-      
-      return fdata
+    return finalData.filter(eD => !(eD.dateAndTime.every((e: any) => !e.time)))
 }

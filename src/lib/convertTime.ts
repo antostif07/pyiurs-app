@@ -3,7 +3,7 @@ export function convertirEnHeureMinute(decimal: string|number) {
         return null
     }
     if(typeof decimal === "string") {
-        return decimal
+        return decimal?.split('\n')[0]
     }
     // Multiplier par 24 pour obtenir le nombre total d'heures
     let totalHeures = decimal * 24;

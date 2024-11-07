@@ -1,8 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import LoginForm from "@/src/ui/auth/login-form";
 import PyiursLogo from "@/src/ui/PyiursLogo";
+import {getSession} from "@/src/actions/auth";
+import {redirect} from "next/navigation";
 
 export default async function Login () {
+    const session = await getSession()
+
+    if (session.isLoggedIn) {
+        redirect('/')
+    }
+
     return (
         <div className="min-h-screen min-w-screen flex justify-center items-center flex-col gap-8">
             <div>

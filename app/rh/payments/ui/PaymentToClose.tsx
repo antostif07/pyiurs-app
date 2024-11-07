@@ -31,10 +31,10 @@ export default function PaymentToClose ({dataAffectations}: {dataAffectations: A
     return (
         <div>
             <div className="flex justify-between pt-4">
-                <div className="flex gap-8 items-center">
-                    <SelectMonthToVerify handleSelected={handleSelected} selected={selected} />
-                    {/* <SelectAssignment affectations={dataAffectations} /> */}
-                </div>
+                {/*<div className="flex gap-8 items-center">*/}
+                {/*    <SelectMonthToVerify handleSelected={handleSelected} selected={selected} />*/}
+                {/*    /!* <SelectAssignment affectations={dataAffectations} /> *!/*/}
+                {/*</div>*/}
             </div>
             {
                 isLoading ? (

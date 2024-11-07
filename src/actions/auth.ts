@@ -1,61 +1,91 @@
-'use server'
+"use server"
+import {LoginFormSchema, LoginFormState} from "@/src/lib/definitions";
+import {getIronSession} from "iron-session";
+import {defaultSession, SessionData, sessionOptions} from "@/src/types/sessions";
+import {cookies} from "next/headers";
+import {redirect} from "next/navigation";
 
-import { signIn, signOut } from '@/lib/auth'
-import { AuthError } from "next-auth";
-import { z } from "zod";
+export async function getSession() {
+    const cookieData = await cookies()
+    const session = await getIronSession<SessionData>(cookieData, sessionOptions)
 
-const loginSchema = z.object({
-    email: z.string().trim().min(1, {message: "Email required"}).email({message: "Invalid Email"}),
-    password: z.string().min(1, {message: "Password required!"}).min(8, {message: "Mot de passe a au moins 8 caracteres"})
-})
-const defaultValues = {
-    email: "",
-    password: ""
+    // If user visits for the first time session returns an empty object.
+    // Let's add the isLoggedIn property to this object and its value will be the default value which is false
+    if (!session.isLoggedIn) {
+        session.isLoggedIn = defaultSession.isLoggedIn;
+    }
+
+    return session
 }
-// prevState: any, 
-export async function login(formData: FormData) {
+
+export async function login(state: LoginFormState, formData: FormData) {
+    // Validate form fields
+    const validatedFields = LoginFormSchema.safeParse({
+        email: formData.get('email'),
+        password: formData.get('password'),
+    })
+
+    // If any form fields are invalid, return early
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            code: 400
+        }
+    }
+
+    const rawData = {
+        ...validatedFields.data
+    }
+
+    // If form fields valid, try to connect
     try {
-        const email = formData.get("email");
-        const password = formData.get("password")
+        const session = await getSession()
 
-        const validateFields = loginSchema.safeParse({
-            email: email, password: password,
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login_check`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/ld+json"
+            },
+            body: JSON.stringify(rawData)
         })
 
-        if(!validateFields.success) {
-            return {
-                message: 'validation error',
-                errors: validateFields.error.flatten().fieldErrors,
-            }
+        const result = await response.json()
+
+        if (result && result.code === 401) {
+            return result
         }
 
-        const res = await signIn("credentials", {
-            email: email, password: password, redirect: false, redirectTo: '/'
-        })
-        
-        return res
-    } catch (error) {
-        
-        if(error instanceof AuthError) {
-            switch (error.type) {
-                case "CredentialsSignin":
-                    return {
-                        message: "Erreur des donnees",
-                        errors: { ...defaultValues,  credentials: "incorrect email or password"}
-                    };
-                    break;
-                default:
-                    return {
-                        message: "Unknown error",
-                        errors: { ...defaultValues,}
-                    }
-                    break;
+        const getMe = await fetch(`${process.env.API_URL}/users/me`, {
+            method: "GET",
+            headers: {
+                "content-type": "application/ld+json",
+                "Authorization": `Bearer ${result.token}`
             }
+        })
+
+        const resGetMe = await getMe.json()
+
+        if(resGetMe && !resGetMe.id) {
+            return { code: resGetMe.code, message: "Login Failed"}
         }
-        throw error
+
+        session.isLoggedIn = true
+        session.name = resGetMe.name
+        session.userId = resGetMe.id
+        session.email = resGetMe.email
+        session.roles = resGetMe.roles
+        session.token = result.token
+
+        await session.save()
+
+        redirect('/')
+    } catch (e) {
+        console.log(e)
     }
 }
 
 export async function logout() {
-    await signOut()
+    const session = await getSession();
+    session.destroy();
+    redirect("/login")
 }

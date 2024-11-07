@@ -1,7 +1,8 @@
 'use server'
-import { revalidatePath } from 'next/cache';
+import {revalidatePath} from 'next/cache';
 import {z} from 'zod'
-import { parseFormData } from '../lib/parseFormData';
+import {parseFormData} from '../lib/parseFormData';
+import {getSession} from "@/src/actions/auth";
 
 const FormSchema = z.object({
   employee: z.string(),
@@ -35,6 +36,8 @@ const FormSchema = z.object({
 const CreateEmployeePayment = FormSchema.omit({});
 
 export default async function addEmployeePayment(formData: FormData) {
+  const session = await getSession()
+
   const parsedData = await parseFormData(formData);
 
   const form = CreateEmployeePayment.safeParse(parsedData)
@@ -46,14 +49,13 @@ export default async function addEmployeePayment(formData: FormData) {
   const res = await fetch(`${process.env.API_URL}/employee_payments`, {
     method: "POST", 
     headers: {
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "Authorization": `Bearer ${session.token}`
     },
     body: JSON.stringify(rawData)
   })
 
   revalidatePath('/rh/pay-slips')
 
-  const result = await res.json()
-
-  return result
+  return await res.json()
 }

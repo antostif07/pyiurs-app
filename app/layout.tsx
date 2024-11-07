@@ -3,8 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { es } from 'date-fns/locale'
 import { setDefaultOptions } from "date-fns";
-import AuthWrapper from "@/src/ui/auth/auth-wrapper";
-import { AppWrapper } from "@/src/context";
+import React from "react";
 
 setDefaultOptions({ locale: es })
 
@@ -23,9 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppWrapper>
         {children}
-        </AppWrapper>
       </body>
     </html>
   );

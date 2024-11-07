@@ -1,20 +1,11 @@
-import AssignmentTable from "@/src/ui/assignments/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
-const getData = async () => {
-  const res = await fetch(`${process.env.API_URL}/assignments`, {
-    headers: {
-      "content-type": "application/ld+json",
-      // "Authorization": `Bearer ${token}`
-    },
-  })
-  return res.json()
-}
+import apiGetData from "@/src/actions/apiGetData";
+import {DataTable} from "@/src/ui/DataTable";
+import {columns} from "@/src/ui/assignments/columns";
 
 export default async function Page() {
-  const data = await getData()
-  const assignments = data && data['hydra:member'] ? data['hydra:member'] : []
+  const data = await apiGetData('/assignments', 'assignments')
 
   return (
     <div className="pt-8">
@@ -25,7 +16,14 @@ export default async function Page() {
               </Link>
           </div>
           <div className="mt-8">
-            <AssignmentTable assignments={assignments} />
+              <DataTable
+                  // @ts-ignore
+                  columns={columns}
+                  data={data['hydra:member'] || []}
+                  searchFilerPlaceholder={"Nom de la boutique"}
+                  totalItems={data['hydra:totalItems'] || 0}
+              />
+            {/*<AssignmentTable assignments={assignments} />*/}
           </div>
       </div>
   )

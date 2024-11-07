@@ -1,69 +1,42 @@
 'use client'
-import FormInput from "@/src/components/FormInput"
-import { Form } from "@/components/ui/form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { LoadingButton } from "../LoadingButton"
-import { useTransition } from "react"
-import { redirect } from "next/navigation"
-import dataToFormData from "@/src/lib/dataToFormData"
-import { useAppContext } from "@/src/context"
-
-const FormSchema = z.object({
-    email: z.string().email("Veuillez rensigner l'email"),
-    password: z.string({message: "Veuillez renseigner le mot de passe"})
-  })
+import {useActionState} from 'react'
+import {useFormStatus} from 'react-dom'
+import {login} from "@/src/actions/auth";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {LoaderCircle} from "lucide-react";
 
 export default function LoginForm() {
-    const [pending, startTransition] = useTransition()
-    const {user, setUser, users} = useAppContext()
-    
-    if(user) {
-        redirect('/')
-    }
-    
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
-        // defaultValues: {},
-      })
-      
-      
-    async function onSubmit(data: z.infer<typeof FormSchema>) {
-        const formData = dataToFormData(data)
-        
-        const email = formData.get('email')
-        const password = formData.get('password')
-
-        startTransition(async () => {
-            console.log(users);
-            
-            const us = users.find((u: any) => u.name === email && u.pass === password)
-            
-            if(us) {
-                setUser(us)
-                localStorage.setItem('user', JSON.stringify(us))
-                redirect('/')
-            }
-        })
-    }
+    const [state, action] = useActionState(login, undefined)
 
     return (
-        <Form {...form}>
-           <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="grid grid-cols-1 gap-8">
-                    <FormInput
-                        control={form.control} disabled={pending}
-                        name="email" label="Email" placeholder="Adresse Email"
-                    />
-                    
-                    <FormInput
-                        control={form.control} disabled={pending} type="password"
-                        name="password" label="Mot de passe" placeholder="Mot de passe"
-                    />
+        // @ts-ignore
+       <form action={action}>
+            <div className="grid grid-cols-1 gap-4">
+                <div>
+                    <Label htmlFor={'email'}>Email</Label>
+                    <Input id={'email'} name={'email'} placeholder={'Adresse Email'} type={'email'} />
                 </div>
-                <LoadingButton pending={pending} text={"Se connecter"} className="w-full mt-8" />
-            </form>
-        </Form>
+
+                <div>
+                    <Label htmlFor={'password'}>Mot de passe</Label>
+                    <Input id={'password'} name={'password'} placeholder={'Mot de passe'} type={'password'} />
+                </div>
+                {(state?.errors?.email || state?.errors?.password || state?.code === 401) && <p className={'italic text-red-800 text-sm'}>Email ou Mot de passe invalide</p>}
+                <SubmitButton />
+            </div>
+
+        </form>
+    )
+}
+
+function SubmitButton() {
+    const { pending } = useFormStatus()
+
+    return (
+        <Button className={'mt-4'} type={'submit'} disabled={pending}>
+            {pending ? <LoaderCircle className={'animate-spin'} /> : "Se Connecter"}
+        </Button>
     )
 }

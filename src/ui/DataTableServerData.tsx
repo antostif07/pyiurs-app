@@ -1,13 +1,11 @@
 'use client'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {ColumnDef,flexRender,getCoreRowModel,useReactTable,getPaginationRowModel,SortingState,getSortedRowModel,ColumnFiltersState,getFilteredRowModel,PaginationState, PaginationOptions,} from "@tanstack/react-table"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import HeaderTable from "./HeaderTable"
+import {ColumnDef,flexRender,getCoreRowModel,useReactTable,SortingState,ColumnFiltersState,PaginationState,} from "@tanstack/react-table"
+import { Dispatch, SetStateAction, useEffect } from "react"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import DataTablePagination from "./DataTablePagination"
 import DataTableHeader from "./DataTableHeader"
-import { redirect } from "next/navigation"
 
 interface IDataTableProps<TData, TValue> {
   isLoading: boolean;

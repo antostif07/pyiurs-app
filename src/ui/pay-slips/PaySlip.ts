@@ -35,4 +35,6 @@ export interface PaySlip {
     nap: number;
     retTransport: number;
     isValid?: boolean;
+    month: string;
+    presents: number;
 }

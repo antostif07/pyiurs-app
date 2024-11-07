@@ -1,16 +1,11 @@
-'use client'
 import { Toaster } from "@/components/ui/toaster";
-import getUser from "@/src/lib/getUser";
+import React from "react";
 
-export default function Template({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function Template({children,}: Readonly<{ children: React.ReactNode; }>) {
     return (
-      <>
-        {children}
-        <Toaster />
-      </>
+        <>
+            {children}
+            <Toaster/>
+        </>
     );
-  }
+}

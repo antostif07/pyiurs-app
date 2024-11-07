@@ -1,5 +1,6 @@
 import RhMenu from "../../src/ui/RhMenu";
 import RhMenuMobile from "@/src/ui/RhMenuMobile";
+import React from "react";
 
 export default async function Template({
   children,

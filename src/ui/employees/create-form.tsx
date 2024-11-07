@@ -151,7 +151,7 @@ export default function CreateForm({affectations, employee}: {affectations: Arra
                     />
                     <FormInput
                         control={form.control} disabled={pending}
-                        name="tel" label="Telephone" placeholder="Telephone" type="tel"
+                        name="tel" label="Telephone" placeholder="Telephone" type="text"
                     />
                     <FormInput
                         control={form.control} disabled={pending}

@@ -6,7 +6,6 @@ import FormInput from "@/src/components/FormInput";
 import dataToFormData from "@/src/lib/dataToFormData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderIcon, PlusCircleIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -24,7 +23,6 @@ const FormSchema = z.object({
 export default function DebtDialog({employee}: {employee: Employee}) {
     const [open, setOpen] = useState<boolean>(false)
     const [pending, startTransition] = useTransition()
-    const {refresh} = useRouter()
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -38,7 +36,6 @@ export default function DebtDialog({employee}: {employee: Employee}) {
         
         startTransition(async () => {
             await addEmployeeDebt(formData)
-            refresh()
             setOpen(false)
         })
     }

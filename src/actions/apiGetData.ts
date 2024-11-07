@@ -1,37 +1,44 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import {getSession} from "@/src/actions/auth";
 
-// Définition du type pour les données de l'API
-type ApiData<T> = {
-  data: T;
-};
+export interface HydraCollection<T> {
+  '@id'?: string,
+  '@context'?: string,
+  '@type'?: string,
+  'hydra:totalItems'?: number,
+  'hydra:member'?: Array<T>,
+  message?: string,
+  code?: number,
+}
 
-// Fonction générique pour les appels API
+
 const apiGetData = async <T>(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  endpoint: string
-): Promise<ApiData<T> | void> => {
+  endpoint: string, tag: string
+): Promise<HydraCollection<T>> => {
   try {
+    const session = await getSession();
+
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
+
     const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
         "content-type": "application/ld+json",
-        // "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${session.token}`,
       },
-      cache: 'no-store'
+      next: {tags: [tag]}
     });
 
-    if (!response.ok) {
-      throw new Error(
-        `API request failed with status ${response.status}: ${response.statusText}`
-      );
+    if(!response.ok) {
+      return {
+        message: `API request failed with status ${response.status}: ${response.statusText}`,
+        code: response.status
+      } as HydraCollection<T>
     }
 
-    const data = await response.json() as ApiData<T>;
-    res.status(200).json(data);
+    return await response.json() as HydraCollection<T>
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    throw error;
   }
 };
 

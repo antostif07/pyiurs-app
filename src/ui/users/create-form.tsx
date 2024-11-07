@@ -10,6 +10,7 @@ import { LoadingButton } from "../LoadingButton"
 import FormSelect from "@/src/components/FormSelect"
 import addUser from "@/src/actions/users"
 import { redirect } from "next/navigation"
+import {Assignment} from "@/src/common/Assignment";
 
 const FormSchema = z.object({
     name: z.string().min(3, {message: "Veuillez renseigner le nom de l'affectation"}),
@@ -18,7 +19,7 @@ const FormSchema = z.object({
     roles: z.string()
   })
 
-export default function CreateForm() {
+export default function CreateForm({data}: {data: Assignment[]}) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -62,7 +63,7 @@ export default function CreateForm() {
                             { id: "ROLE_USER", value: "Utilisateur"},
                         ]}
                         // @ts-ignore
-                        control={form.control} disabled={pending} description="Pernission de l'utilisateur"
+                        control={form.control} disabled={pending} description="Role de l'utilisateur"
                     />
                 </div>
                 <LoadingButton pending={pending} text="Créer" className="mt-8" />

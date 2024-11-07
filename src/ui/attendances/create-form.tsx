@@ -53,12 +53,12 @@ export default function CreateForm({employees}: {employees: Array<Employee>}) {
             async function processItems(array: {
                 name: string, id: number, 
                 employeeId: string, 
-                dateandtime: {
+                dateAndTime: {
                     date: string, day: string, status: string, time: string|null
                 }[]
             }[]) {
                 for (const item of array) {
-                    for (const dt of item.dateandtime) {
+                    for (const dt of item.dateAndTime) {
                         if(parseInt(dt.day) !== 7 && item.employeeId && item.employeeId !== "") {
                             const d = dt.date.split("/")
                             const date_time = dt.time ? `${d[2]}-${d[1]}-${d[0]}T${dt.time}` : `${d[2]}-${d[1]}-${d[0]}T00:00`
@@ -154,7 +154,7 @@ export default function CreateForm({employees}: {employees: Array<Employee>}) {
                                             <TableBody>
                                             {
                                                 // @ts-ignore
-                                                eD.dateandtime.map((row: any, index: number) => parseInt(row.day) !== 7 && (
+                                                eD.dateAndTime.map((row: any, index: number) => parseInt(row.day) !== 7 && (
                                                     <TableRow key={index}>
                                                         <TableCell className="font-medium">{row.date}</TableCell>
                                                         <TableCell className="font-medium">{parseInt(row.day) === 7 ? "Dimanche" : row.time}</TableCell>
