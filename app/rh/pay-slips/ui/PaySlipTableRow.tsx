@@ -57,15 +57,13 @@ export default function PaySlipTableRow(
         })
     }
 
-    const present = paySlip.presents > paySlip.employeeDaysOfJob ? paySlip.employeeDaysOfJob : paySlip.presents
-
     return (
         <TableRow>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeName}</TableCell>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeAssignment}</TableCell>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeSalary} $</TableCell>
             <TableCell className="font-medium whitespace-nowrap">{paySlip.employeeTransport} $</TableCell>
-            <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{present}jr</TableCell>
+            <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">{paySlip.presents}jr</TableCell>
             <TableCell className="font-medium whitespace-nowrap bg-blue-400 text-white">
                 {`${paySlip.prime.toFixed(2)}$`}
             </TableCell>

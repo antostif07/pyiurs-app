@@ -30,7 +30,7 @@ export default async function Page(
                 </div>
             </div>
             <AttendanceFilters assignments={assignments['hydra:member'] || []} userRoles={session.roles || []} />
-            <EmployeeTabs  employees={data['hydra:member'] || []}/>
+            <EmployeeTabs employees={data['hydra:member'] || []}/>
             <AttendanceTab
                 searchParams={searchParams}
             />
