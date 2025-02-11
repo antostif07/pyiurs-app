@@ -20,8 +20,6 @@ export default async function UserPage() {
     )
     let result = await data.json()
 
-    console.log(result)
-
     if (result && result.code === 401) {
         await logout()
     }

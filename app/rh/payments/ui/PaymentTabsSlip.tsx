@@ -14,21 +14,21 @@ export default function PaymentTabsSlip({data}: {data: IEmployeePayment[]}) {
         return BulletinPaie({employeePayment: userPayment})
     }
     
-    const user = getUser()
+    // const user = getUser()
     
-    const result = data ? data.filter(d => d.employee.assignment.name === user.token) : []
+    // const result = data ? data.filter(d => d.employee.assignment.name === user.token) : []
 
     return (
         <Tabs className="mt-4" defaultValue={data[0] ? data[0].employee.name : ""}>
             <TabsList>
-                {
-                    result && result.map((userPayment: IEmployeePayment, index: number) => (
+                {   
+                    data && data.map((userPayment: IEmployeePayment, index: number) => (
                         <TabsTrigger key={index} value={userPayment.employee.name}>{userPayment.employee.name}</TabsTrigger>
                     ))
                 }
             </TabsList>
             {
-                result && result.map((userPayment: IEmployeePayment, index: number) => {
+                data && data.map((userPayment: IEmployeePayment, index: number) => {
                     const transportByDay = userPayment.employee.transportFee / 26
                     const totalNet = (userPayment.employee.total_days - userPayment.absence) * (userPayment.employee.salary / userPayment.employee.total_days)
                     const totalRet = 

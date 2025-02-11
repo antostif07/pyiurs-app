@@ -35,7 +35,9 @@ export default function CreateForm({data}: {data: Assignment[]}) {
         startTransition(async () => {
             const res = await addUser(form_data)
 
-            redirect('/users')
+            if(res) {
+                redirect('/users')
+            }
         })
     }
     

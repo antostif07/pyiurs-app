@@ -1,31 +1,9 @@
 import CreateAuditForm from "../../../src/ui/CreateAuditForm"
-import { redirect } from "next/navigation"
-
-const getData = async () => {
-  
-    const res = await fetch(`${process.env.API_URL}/assignments`, {
-      headers: {
-        "content-type": "application/ld+json",
-        // "Authorization": `Bearer ${session?.user.access_token}`
-      },
-      cache: 'no-cache'
-    })
-    
-    const r = await res.json()
-
-    console.log(r);
-    
-
-    // if(r && r.code === 401) {
-    //   // await logout()
-
-    //   redirect('/login')
-    // }
-    return r
-  }
+import apiGetData from "@/src/actions/apiGetData";
+import {Assignment} from "@/src/common/Assignment";
 
 export default async function AddAuditMission() {
-    const data = await getData()
+    const assignments = await apiGetData<Assignment>(`/assignments`, 'assignments')
     
 
     return (
@@ -34,7 +12,7 @@ export default async function AddAuditMission() {
                 <h1 className="text-2xl font-bold">Créer une mission d'audit</h1>
             </div>
             <div className="mt-8">
-                <CreateAuditForm affectations={data['hydra:member']} />
+                <CreateAuditForm affectations={assignments['hydra:member'] || []} />
             </div>
         </div>
     )

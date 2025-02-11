@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useTransition } from "react"
 import { usePathname } from "next/navigation"
+import {toast} from "@/components/ui/use-toast";
 
-export default function ButtonAddResultFile ({audit}: {audit: Audit}) {
-    const [pending, startTransition] = useTransition()
+export default function ButtonAddBaseFile ({audit}: {audit: Audit}) {
     const pathname = usePathname()
+    const [pending, startTransition] = useTransition()
 
     const handleChange = (e: any) => {
         const fileInput = e.target;
@@ -32,9 +33,16 @@ export default function ButtonAddResultFile ({audit}: {audit: Audit}) {
 
         startTransition(async () => {
             const fileResult = await saveMediaObject(formData)
-            
+
             // @ts-ignore
-            await updateAudit({resultFile: fileResult["@id"]}, audit.id, {redirectLink: pathname})
+            const result = await updateAudit({baseFile: fileResult["@id"]}, audit.id, {redirectLink: pathname})
+
+            if (result.baseFile) {
+                toast({
+                    title: "Fichier de base ajouté",
+                    description: `Fichier de base ajouté avec succés`,
+                })
+            }
         })
     }
 
@@ -42,7 +50,7 @@ export default function ButtonAddResultFile ({audit}: {audit: Audit}) {
         <div className="grid w-full max-w-sm items-center gap-1.5 my-4">
             <Label htmlFor="audit-result-file">
                 {
-                audit.resultFile ? "Modifier le fichier Excel du Résultat" : "Ajouter un fichier Excel du Résultat"
+                audit.baseFile ? "Modifier le fichier de base de l'audit" : "Ajouter le fichier de base de l'audit"
                 }
             </Label>
             <Input id="audit-result-file" type="file" onChange={handleChange} disabled={pending} />

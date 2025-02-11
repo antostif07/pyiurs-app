@@ -8,13 +8,13 @@ export interface Audit {
     categories: string;
     assignment: Assignment;
     createdAt: string;
-    baseFile: {
+    baseFile?: {
         contentUrl: string;
-    };
+    } | string;
     resultFile?: {
         contentUrl: string;
-    };
+    } | string;
     totalBaseFile?: {
         contentUrl: string;
-    };
+    } | string;
 }

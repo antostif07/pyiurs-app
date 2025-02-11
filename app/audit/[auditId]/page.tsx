@@ -1,63 +1,19 @@
 import { Audit } from "@/src/common/Audit"
-import { transformData } from "@/src/lib/transformData"
 import { format } from "date-fns"
 import { Suspense } from "react"
-import * as XLSX from 'xlsx'
 import AuditResultTabs from "../../../src/ui/AuditResultTabs"
 import ButtonAddResultFile from "../../../src/ui/ButtonAddResultFile"
 import LoadingPage from "@/src/ui/LoadingPage"
 import AuditResultTabsBeauty from "@/src/ui/AuditResultTabsBeauty"
+import apiGetSingleData from "@/src/actions/apiGetSingleData";
 
-const getAudit = async (id: string) => {
-    try {
-        const res = await fetch(`${process.env.API_URL}/audits/${id}`, {
-            headers: {
-              "content-type": "application/ld+json"
-            },
-            next: {
-              revalidate: 120
-            },
-          })
-          
-          const resp = await res.json()
-          return resp
-    } catch (error) {
-        console.log(error);
-    }
-  
-}
+export default async function Page({params, searchParams}: {params: Promise<{auditId: string}>, searchParams?: Promise<{ page?: string }>}) {
+    const auditId = (await params).auditId
+    const sp = await searchParams
 
-export default async function Page({params}: any) {
-    const {auditId} = params
-    
-    const audit: Audit = await getAudit(auditId)
-    const file = await (await fetch(`${process.env.NEXT_PUBLIC_URL}${audit.baseFile.contentUrl}`)).arrayBuffer();
-    const resultFile = audit.resultFile ? await (await fetch(`${process.env.NEXT_PUBLIC_URL}${audit.resultFile.contentUrl}`)).arrayBuffer() : null
-    const totalBaseFile = audit.totalBaseFile ? await (await fetch(`${process.env.NEXT_PUBLIC_URL}${audit.totalBaseFile.contentUrl}`)).arrayBuffer() : null
-    
-    const workbook = XLSX.read(file, {'type': 'array'});
-    const sheetName = workbook.SheetNames[0]
-    const sheet = workbook.Sheets[sheetName]
-    const raw_data = XLSX.utils.sheet_to_json(sheet, {header: 1})
-    const baseData = transformData(raw_data)
-    
-    const workbookR = resultFile ? XLSX.read(resultFile, {'type': 'array'}) : null
-    const sheetNameR = workbookR ? workbookR.SheetNames[0] : null
-    const sheetR = sheetNameR && workbookR ? workbookR.Sheets[sheetNameR] : null
-    const raw_dataR = sheetR ? XLSX.utils.sheet_to_json(sheetR, {header: 1}) : null
-    const resultData = raw_dataR ? transformData(raw_dataR) : null
+    const audit = await apiGetSingleData<Audit>(`/audits`, auditId, 'audits')
 
-    const workbookTotal = totalBaseFile ? XLSX.read(totalBaseFile, {'type': 'array'}) : null
-    const sheetNameTotal = workbookTotal ? workbookTotal.SheetNames[0] : null
-    const sheetTotal = workbookTotal && sheetNameTotal ? workbookTotal.Sheets[sheetNameTotal] : null
-    const raw_dataTotal = sheetTotal ? XLSX.utils.sheet_to_json(sheetTotal, {header: 1}) : null
-    const totalData = raw_dataTotal ? transformData(raw_dataTotal) : null
-
-    if(audit.segment === "Beauty") {
-        return <Beauty audit={audit} baseData={baseData} totalData={totalData} resultData={resultData} />
-    }
-
-    return <Other audit={audit} baseData={baseData} totalData={totalData} resultData={resultData} />
+    return <Other audit={audit.data} page={sp?.page} />
 }
 
 const Beauty = ({audit, baseData, resultData, totalData}: {audit: Audit, baseData: any, resultData: any, totalData: any}) => {
@@ -95,8 +51,8 @@ const Beauty = ({audit, baseData, resultData, totalData}: {audit: Audit, baseDat
         </Suspense>
     )
 }
-const Other = ({audit, baseData, resultData, totalData}: {audit: Audit, baseData: any, resultData: any, totalData: any}) => {
-    
+const Other = ({audit, page}: {audit: Audit, page?: string}) => {
+
     return (
         <Suspense fallback={<LoadingPage />}>
             <div className="pt-8">
@@ -123,7 +79,7 @@ const Other = ({audit, baseData, resultData, totalData}: {audit: Audit, baseData
                     </div>
                 </div>
                 <div className="mt-8">
-                    <AuditResultTabs baseData={baseData} resultData={resultData} totalData={totalData} audit={audit}  />
+                    <AuditResultTabs audit={audit} page={page} />
                 </div>
                 <div className="h-96 w-full sm:h-0 sm:w-0"></div>
             </div>

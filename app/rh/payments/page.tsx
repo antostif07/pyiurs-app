@@ -1,29 +1,49 @@
-import DateRangeInput from "@/src/ui/attendances/date-range";
-import SelectAssignment from "@/src/ui/payments/SelectAssignment";
-import TableWrapper from "./table-wrapper";
-import Payment from "@/src/ui/payments/Payment";
+import { objectToUrlParams } from "@/src/lib/objectToUrlParams";
+import apiGetData from "@/src/actions/apiGetData";
+import { Assignment } from "@/src/common/Assignment";
+import { getSession } from "@/src/actions/auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PaymentToClose from "./ui/PaymentToClose";
 
-const getAssignments = async (searchParams?: any) => {
-    const res = await fetch(`${process.env.API_URL}/assignments`, {
-      headers: {
-        "content-type": "application/ld+json"
-      },
-      next: {
-        revalidate: 5
-      }
-    })
-    return res.json()
-  }
+export default async function Payments(props: {searchParams: Promise<{search?: string, 'employee.assignment'?: string}>}) {
+  const searchParams = await props.searchParams
+  const urlParams = objectToUrlParams({month: searchParams.search, assignment: searchParams["employee.assignment"]})
+  const affectations = await apiGetData<Assignment>('/assignments', 'assignments')
+  
+  const tabs = [
+    {
+        id: "payment_to_close", name: "Mois à clotûrer"
+    },
+    {
+        id: "payments_closed", name: "Liste des mois clotûrés"
+    },
+  ]
 
-export default async function Payments() {
-    const affectations = await getAssignments()
-    
-    return (
-        <div className="">
-            <div className="flex justify-between">
-                <h1 className="text-2xl font-bold">Cloture de Paie</h1>
-            </div>
-            <Payment affectations={affectations} />
-        </div>
+  const aff = affectations['hydra:member'] ?? []
+
+  return (
+    <div className="">
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">Cloture de Paie</h1>
+      </div>
+      <Tabs className="mt-4" defaultValue={"payment_to_close"}>
+            <TabsList>
+                {
+                    tabs.map((tab: {id: string, name: string}, index: number) => (
+                        <TabsTrigger key={index} value={tab.id}>{tab.name}</TabsTrigger>
+                    ))
+                }
+            </TabsList>
+            {
+                tabs.map((tab: {name: string, id: string}, index: number) => (
+                    <TabsContent key={index} value={tab.id}>
+                        {
+                            tab.id === "payment_to_close" ? <PaymentToClose dataAffectations={aff} searchParams={urlParams} /> : <div>Liste</div>
+                        }
+                    </TabsContent>
+                ))
+            }
+        </Tabs>
+    </div>
     )
 }

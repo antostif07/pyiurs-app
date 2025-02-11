@@ -4,7 +4,7 @@ import {HydraCollection} from "@/src/actions/apiGetData";
 import {ColumnDef} from "@tanstack/react-table";
 import {useRouter} from "next/navigation";
 import {Suspense, useEffect} from "react";
-import {getSession} from "@/src/actions/auth";
+import {getSession, logout} from "@/src/actions/auth";
 
 export default function DataTableErrorWrapper<TData, TValue>({data, columns}: {data: HydraCollection<TData>, columns: ColumnDef<TData, TValue>[],}) {
     const router = useRouter()
@@ -14,17 +14,17 @@ export default function DataTableErrorWrapper<TData, TValue>({data, columns}: {d
             const session = await getSession()
 
             if(!session.token) {
-                session.destroy()
+                await logout()
                 router.push('/login')
             }
             if(data.code && data.code === 401) {
-                session.destroy()
-                router.push('/login')
+                await logout()
+                router.replace('/login')
             }
         }
 
         fetchSession().then(r => console.error(r))
-    }, [])
+    }, [data])
 
     return (
         <Suspense fallback={<div>ok</div>}>

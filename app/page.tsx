@@ -1,6 +1,7 @@
 import MainMenu from "@/src/ui/MainMenu";
 import {getSession} from "@/src/actions/auth";
 import {redirect} from "next/navigation";
+import UserMenu from "@/src/ui/UserMenu";
 
 export default async function Home() {
     const session = await getSession()
@@ -20,10 +21,13 @@ export default async function Home() {
     }
 
     const userRoutes = routes.filter((route) => route.role.some(role => session.roles?.includes(role)))
-
+    
     return (
         <div className="px-8 sm:px-12 md:px-24 lg:px-32 py-8">
-          <MainMenu name={session.name} userRoutes={userRoutes} />
+            {
+                session.roles?.length === 1 && session.roles[0] === "ROLE_USER" ?
+                <UserMenu name={session.name} /> : <MainMenu name={session.name} userRoutes={userRoutes} />
+            }
         </div>
     );
 }

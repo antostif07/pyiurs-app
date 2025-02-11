@@ -1,6 +1,5 @@
 'use client'
 import createAudit from "@/src/actions/audit"
-import { saveMediaObject } from "@/src/actions/mediaObjet"
 import { Assignment } from "@/src/common/Assignment"
 import FormCalendar from "@/src/components/FormCalendar"
 import FormInput from "@/src/components/FormInput"
@@ -10,12 +9,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import dataToFormData from "@/src/lib/dataToFormData"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { LoadingButton } from "./LoadingButton"
-import { toast } from "@/components/ui/use-toast"
-import { usePathname } from "next/navigation"
+import {toast} from "@/components/ui/use-toast";
+import {usePathname, useRouter} from "next/navigation";
 
 const FormSchema = z.object({
     name: z.string().min(3, {message: "Veuillez renseigner le nom"}),
@@ -23,12 +22,11 @@ const FormSchema = z.object({
     segment: z.string({message: "Veuillez choisir le Segment"}),
     categories: z.string({message: "Veuillez indiquer la ou les categorie(s) à auditer"}),
     start_date: z.date({message: "Veuillez selectionner la date du debut de l'audit"}),
-  })
+})
 
 export default function CreateAuditForm({affectations}: {affectations: Array<Assignment>}) {
-    const [excelFile, setExcelFile] = useState<FormData|null>(null)
-    const [totalProductsFile, setTotalProductsFile] = useState<FormData|null>(null)
     const [pending, startTransition] = useTransition()
+    const {replace} = useRouter()
     const pathname = usePathname()
     
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -39,57 +37,20 @@ export default function CreateAuditForm({affectations}: {affectations: Array<Ass
       })
       
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        if(!excelFile) {
-            toast({
-                title: "Fichier non selectionné",
-                description: "Veuillez selectionner le fichier excel",
-                variant: "destructive"
-              })
-            
-              return
-        }
-
-        if(!totalProductsFile) {
-            toast({
-                title: "Fichier non selectionné",
-                description: "Veuillez charger le fichier total des produits",
-                variant: "destructive"
-              })
-            
-              return
-        }
-        
         startTransition(async () => {
-            const baseFile = await saveMediaObject(excelFile)
-            
-            const totalFile = await saveMediaObject(totalProductsFile)
-            
-            const formData = dataToFormData({...data, totalBaseFile: totalFile['@id'], baseFile: baseFile['@id']})
+            const formData = dataToFormData(data)
 
-            await createAudit(formData, {redirectLink: pathname.replace("/add", "")})
+            const result = await createAudit(formData)
+
+            if(result.name){
+                toast({
+                    title: "Audit Crée",
+                    description: `Nouveau mission d'audit crée avec succés`,
+                })
+
+                replace(pathname.replace("/add", ""))
+            }
         })
-    }
-// @ts-ignore
-    const handleChange = (e: any, setFile) => {
-        const fileInput = e.target;
-
-        if (!fileInput.files) {
-            console.warn("no file was chosen");
-            return;
-        }
-    
-        if (!fileInput.files || fileInput.files.length === 0) {
-            console.warn("files list is empty");
-            return;
-        }
-    
-        const file = fileInput.files[0];
-        
-        const formData = new FormData();
-
-        formData.append("file", file);
-
-        setFile(formData)
     }
 
     return (
@@ -121,16 +82,8 @@ export default function CreateAuditForm({affectations}: {affectations: Array<Ass
                         label="Date de debut" name="start_date" control={form.control} placeholder="Date de debut"
                         disabled={pending}
                     />
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Label htmlFor="audit-file">Fichier Excel des produits à auditer</Label>
-                        <Input id="audit-file" type="file" onChange={(e) => handleChange(e, setExcelFile)} disabled={pending} />
-                    </div>
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Label htmlFor="audit-total-file">Fichier Excel total produits</Label>
-                        <Input id="audit-total-file" type="file" onChange={(e) => handleChange(e, setTotalProductsFile)} disabled={pending} />
-                    </div>
                 </div>
-                <LoadingButton pending={pending} text="Créer" />
+                <LoadingButton pending={pending} text="Créer" className={'my-4'} />
             </form>
         </Form>
     )

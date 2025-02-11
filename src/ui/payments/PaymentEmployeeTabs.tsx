@@ -1,8 +1,11 @@
 import PaymentToClose from "@/app/rh/payments/ui/PaymentToClose";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import apiGetData from "@/src/actions/apiGetData";
 import { Assignment } from "@/src/common/Assignment";
+import { objectToUrlParams } from "@/src/lib/objectToUrlParams";
 
-export default function PaymentEmployeeTabs ({dataAffectations}: {dataAffectations: Assignment[]}) {
+export default async function PaymentEmployeeTabs () {
+    
     const tabs = [
         {
             id: "payment_to_close", name: "Mois à clotûrer"
@@ -21,7 +24,7 @@ export default function PaymentEmployeeTabs ({dataAffectations}: {dataAffectatio
                     ))
                 }
             </TabsList>
-            {
+            {/* {
                 tabs.map((tab: {name: string, id: string}, index: number) => (
                     <TabsContent key={index} value={tab.id}>
                         {
@@ -29,7 +32,7 @@ export default function PaymentEmployeeTabs ({dataAffectations}: {dataAffectatio
                         }
                     </TabsContent>
                 ))
-            }
+            } */}
         </Tabs>
     )
 }

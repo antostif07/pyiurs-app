@@ -19,9 +19,6 @@ export default async function Template({
                 <div>
                 Pyiurs BackOffice
                 </div>
-                {/* <div className="flex">
-                  <h3></h3>
-                </div> */}
               </div>
             </form>
           </div>

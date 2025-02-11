@@ -5,8 +5,8 @@ import apiGetData from "@/src/actions/apiGetData";
 import DataTableErrorWrapper from "@/src/ui/DataTableErrorWrapper";
 
 export default async function Page(
-    props: {searchParams?: Promise<{ page?: string }>
-}) {
+    props: {searchParams?: Promise<{ page?: string }> }
+) {
     const searchParams = await props.searchParams
     const currentPage = Number(searchParams?.page) || 1
 

@@ -73,6 +73,9 @@ export default function PrimeDialog({employee}: {employee: Employee}) {
                                     {id: "2024-07", value: "Juillet 2024"},
                                     {id: "2024-08", value: "Aout 2024"},
                                     {id: "2024-09", value: "Septembre 2024"},
+                                    {id: "2024-10", value: "Octobre 2024"},
+                                    {id: "2024-11", value: "Novembre 2024"},
+                                    {id: "2024-12", value: "Decembre 2024"},
                                 ]} label={"Mois de paiement de la prime"} disabled={pending} />
                             </div>
                             <div className="flex justify-end gap-2">
